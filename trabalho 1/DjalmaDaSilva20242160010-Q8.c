@@ -36,7 +36,7 @@ int main(){
     imprimir_tabuleiro(tabuleiro, jogador_atual);
 
     if(estado_jogo == 1){
-        printf("Parabéns ao jogador %d ('%c') venceu!\n", jogador_atual, (jogador_atual == 1 ? 'x' : '0' ));
+        printf("Parabéns ao jogador %d ('%c') venceu!\n", jogador_atual, (jogador_atual == 1 ? 'x' : 'O' ));
     }else{
         printf("EMPATE!\n");
     }
@@ -83,7 +83,7 @@ int verificar_vitoria(char tabuleiro[TAM][TAM]){
     char marca;
 
     for(int jogador = 1; jogador <= 2; jogador ++){
-        marca = (jogador == 1) ? 'X' : '0';
+        marca = (jogador == 1) ? 'X' : 'O';
 
         for(int i = 0; i < TAM; i++){
             if(tabuleiro[i][0] == marca && tabuleiro[i][1] == marca && tabuleiro[i][2] == marca){
@@ -113,20 +113,28 @@ int verificar_vitoria(char tabuleiro[TAM][TAM]){
 int fazer_jogada(char tabuleiro[TAM][TAM], int jogador_atual){
     char jogada[3];
     int linha, coluna;
-    char marca = (jogador_atual ==1) ? 'X' : '0';
+    char marca = (jogador_atual ==1) ? 'X' : 'O';
     char linha_char;
 
     if(scanf("%2s", jogada) !=1){
         while (getchar() != '\n');
-        printf("Entrada invalida!");
+        printf("\nEntrada invalida!");
         return 0;
     }
     
     while (getchar() != '\n');
 
-    linha_char = to_upper_manual(jogada[0]);
+    linha_char = (jogada[0]);
 
-    linha = linha_char - 'A';
+    if(linha_char >= 'A' && linha_char <= 'C'){
+        linha = linha_char - 'A';
+    }else if(linha_char >= 'a' && linha_char <= 'c'){
+        linha = linha_char -'a';
+    }
+    else{
+        linha = -1;
+    }
+
     coluna = jogada[1] - '1';
 
     if(linha < 0 || linha >= TAM || coluna < 0 || coluna >= TAM){
@@ -134,7 +142,7 @@ int fazer_jogada(char tabuleiro[TAM][TAM], int jogador_atual){
             return 0;
     }
     if(tabuleiro[linha][coluna] != ' '){
-        printf("\njogada invalida! local ja ocupado! ('c%')", tabuleiro[linha][coluna]);
+        printf("\njogada invalida! local ja ocupado! ('%c').\n", tabuleiro[linha][coluna]);
             return 0;
     }
      
