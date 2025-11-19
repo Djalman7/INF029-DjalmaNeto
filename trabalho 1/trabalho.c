@@ -153,6 +153,11 @@ DiasMesesAnos q2(char datainicial[], char datafinal[]){
     //calcule os dados e armazene nas três variáveis a seguir
     DiasMesesAnos dma;
 
+    dma.qtdDias = 0;
+    dma.qtdMeses = 0;
+    dma.qtdAnos = 0;
+    dma.retorno = 0;
+
     if (q1(datainicial) == 0){
       dma.retorno = 2;
       return dma;
@@ -160,12 +165,54 @@ DiasMesesAnos q2(char datainicial[], char datafinal[]){
       dma.retorno = 3;
       return dma;
     }else{
-      //verifique se a data final não é menor que a data inicial
-      
-      //calcule a distancia entre as datas
+    DataQuebrada dIni = quebraData(datainicial);
+    DataQuebrada dFim = quebraData(datafinal);
+
+    if(dIni.iAno < 100) dIni.iAno += 2000;
+    if(dFim.iAno < 100) dFim.iAno += 2000;
+
+    if(dIni.iAno > dFim.iAno || (dIni.iAno == dFim.iAno && dIni.iMes > dFim.iMes) || (dIni.iAno == dFim.iAno && dIni.iMes == dFim.iMes && dIni.iDia > dFim.iDia)){
+        dma.retorno =4;
+        return dma;
+    }
+
+    int diaI = dIni.iDia;
+    int mesI = dIni.iMes;
+    int anoI = dIni.iAno;
+
+    int diaF = dFim.iDia;
+    int mesF = dFim.iMes;
+    int anoF = dFim.iAno;
+
+    int dias_no_mes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int diasMes;
+
+    if(diaF < diaI){
+        mesF--;
+        if(mesF == 0){
+            mesF = 12;
+            anoF--;
+        }
+
+        diasMes = dias_no_mes[mesF];
+        if(mesF ==2 && bissexto(anoF)){
+            diasMes = 29;
+        }
+
+        diaF += diasMes;
+    }
+
+    dma.qtdDias = diaF - diaI;
+
+    if(mesF < mesI ){
+        mesF += 12;
+        anoF--;
+    }
+    dma.qtdMeses = mesF - mesI;
+
+    dma.qtdAnos = anoF -anoI;
 
 
-      //se tudo der certo
       dma.retorno = 1;
       return dma;
       
@@ -186,11 +233,12 @@ DiasMesesAnos q2(char datainicial[], char datafinal[]){
 int q3(char *texto, char c, int isCaseSensitive)
 {
     int qtdOcorrencias = 0;
+    char cBusca = c;
     char atual;
 
-    if(isCaseSensitive!= 1){
-        if(c >= 'A' && c <= 'Z'){
-            c = c - 'A' + 'a';
+    if(isCaseSensitive != 1){
+        if(cBusca >= 'A' && cBusca <= 'Z'){
+            cBusca = cBusca - 'A' + 'a';
         }
     }
 
@@ -201,7 +249,7 @@ int q3(char *texto, char c, int isCaseSensitive)
                     atual = atual -'A' + 'a';
                 }
             }
-            if(atual == c){
+            if(atual == cBusca){
                 qtdOcorrencias ++;
             }
     }
@@ -226,26 +274,27 @@ int q3(char *texto, char c, int isCaseSensitive)
  */
 int q4(char *strTexto, char *strBusca, int posicoes[30])
 {
-    int qtdOcorrencias = -1;
+    int i, j;
+    int qtdOcorrencias = 0;
     int tamTexto = strlen(strTexto);
     int tamBusca = strlen(strBusca);
-    int k =0;
+    int qtd =0;
 
     if(tamBusca == 0 || tamTexto == 0){
         return 0;
     }
 
-    for(int i =0; i <= tamTexto - tamBusca; i++){
-        int j;
+    for(i =0; i <= tamTexto - tamBusca; i++){
+        int achou = 1;
         for(j = 0; j< tamBusca; j++){
             if(strTexto[i+j] != strBusca[j]){
+                achou = 0;
                 break;
             }
         }
-        if( j== tamBusca){
-            posicoes[k] = i+1;
-            posicoes[k+1] = i + tamBusca;
-            k = k + 2;
+        if( achou == 1){
+            posicoes[qtdOcorrencias*2] = i+1;
+            posicoes[qtdOcorrencias*2+1] = i + tamBusca;
             qtdOcorrencias ++;
         }
     }
@@ -265,11 +314,20 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 
 int q5(int num)
 {
+    int invertido = 0;
+    int digito;
 
+    while (num > 0){
+        digito = num %10;
+        invertido = invertido * 10 + digito;
+        num = num / 10;
+    }
+    
 
-    return num;
+    return invertido;
 }
 
+/*
 /*
  Q6 = ocorrência de um número em outro
  @objetivo
@@ -282,7 +340,41 @@ int q5(int num)
 
 int q6(int numerobase, int numerobusca)
 {
-    int qtdOcorrencias;
+    int qtdOcorrencias = 0;
+    int Nbase, nbCopia, p, Rbusca;
+
+    if(numerobusca == 0){
+        if (numerobase){
+            return 1;
+        }else{
+            Nbase = numerobase;
+            while(Nbase > 0){
+                if(Nbase % 10 == 0)qtdOcorrencias++;
+                Nbase /= 10;
+            }
+            return qtdOcorrencias;
+            
+        }
+        
+    }
+
+    Nbase = numerobase;
+    while(Nbase > 0){
+        nbCopia = Nbase;
+        p = 1;
+        Rbusca = 0;
+
+        while(p<=nbCopia && Rbusca < numerobusca){
+            Rbusca = nbCopia % (p * 10);
+            if(Rbusca == numerobusca){
+                qtdOcorrencias++;
+                break;
+            }
+            p *= 10;
+        }
+        Nbase /= 10;
+    }
+    
     return qtdOcorrencias;
 }
 
@@ -296,10 +388,52 @@ int q6(int numerobase, int numerobusca)
     1 se achou 0 se não achou
  */
 
- int q7(char matriz[8][10], char palavra[5])
- {
-     int achou;
-     return achou;
+ int q7(char matriz[8][10], char palavra[5]){
+    int achou =0;
+    int i, j, k;
+    int direcaoX[8] ={-1,-1,-1, 0, 0, 1, 1, 1};//dirções para percorrer dentro da matriz.
+    int direcaoY[8] ={-1, 0, 1,-1, 1,-1, 0, 1};
+    int tam = 0;
+
+    while(palavra[tam] != '\0'){
+        tam++;
+    }
+    if(tam == 0) return 0;
+
+    for(i = 0; i<8 && !achou; i++){
+        for(j = 0; j<10 &&! achou; j++){
+            if(matriz[i][j] != palavra[0])continue;
+
+            int dir;
+            for(dir = 0; dir < 8 && !achou; dir++){
+                int x = i;
+                int y = j;
+                int ok = 1;
+
+                for(k = 1; k < tam; k++){
+                    x += direcaoX[dir];
+                    y += direcaoY[dir];
+                    if(x < 0 || x >= 8 || y < 0 || y>= 10){
+                        ok = 0;
+                        break;
+                    }
+                    if(matriz[x][y] != palavra[k]){
+                        ok =0;
+                        break;
+                    }
+                }
+
+                if(ok){
+                    achou = 1;
+                }
+
+
+            }
+        }
+    }
+
+
+    return achou;
  }
 
 
