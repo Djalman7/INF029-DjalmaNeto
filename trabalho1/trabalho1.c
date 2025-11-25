@@ -21,7 +21,7 @@
 // #################################################
 
 #include <stdio.h>
-#include "trabalho.h" 
+#include "trabalho1.h" 
 #include <stdlib.h>
 #include <string.h>
 
