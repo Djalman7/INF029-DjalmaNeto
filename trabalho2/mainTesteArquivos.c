@@ -25,7 +25,7 @@ int main()
     testeExcluirNumeroEspecifico();
     testeListar();
     testeRetornarTodosNumeros();
-    //testeMudarTamanhoEstrutura();
+    testeMudarTamanhoEstrutura(); //quando testa esta função da erro de memória!
     testeListaEncadeada();
     finalizar();
 }

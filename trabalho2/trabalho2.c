@@ -367,9 +367,6 @@ int modificarTamanhoEstruturaAuxiliar(int posicao, int novoTamanho)
         return SEM_ESTRUTURA_AUXILIAR;
     }
 
-    if(novoTamanho < 0 ){
-        return NOVO_TAMANHO_INVALIDO;
-    }
 
     novoTamanhoTotal = vetorPrincipal[idx].tam + novoTamanho;
 
